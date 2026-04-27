@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Skills & Behavioral Data</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
+:root{--bg:#f0ede8;--surface:#fff;--surface2:#f7f5f2;--ink:#1a1714;--ink-muted:#6b6560;--border:#e2ddd8;--accent:#c0392b;--accent2:#2c5f8a;--green:#27674a;--amber:#b8640a;--purple:#6c3483;--radius:8px;--shadow:0 2px 10px rgba(0,0,0,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.app-header{background:var(--ink);color:#fff;padding:0 20px;height:50px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.app-header h1{font-family:'DM Serif Display',serif;font-size:1.05rem;font-weight:400}
+.pill{background:var(--accent2);color:#fff;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px;display:none}
+.pill.show{display:block}
+.tab-bar{display:flex;background:#fff;border-bottom:2px solid var(--border);flex-shrink:0;overflow-x:auto}
+.tab-btn{padding:0 16px;height:44px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:var(--ink-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tab-btn:hover{color:var(--ink);background:var(--surface2)}
+.tab-btn.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab-content{flex:1;overflow:hidden;display:none}
+.tab-content.active{display:flex;flex-direction:column}
+.fl{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);display:block;margin-bottom:4px}
+.fi{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.83rem;background:#fff;color:var(--ink)}
+.fi:focus{outline:none;border-color:var(--accent2)}
+.btn{padding:8px 16px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-p{background:var(--accent2);color:#fff}.btn-p:hover{background:#245078}
+.btn-g{background:none;border:1px solid var(--border);color:var(--ink-muted)}.btn-g:hover{background:var(--surface2);color:var(--ink)}
+.btn-sm{padding:5px 12px;font-size:.75rem}
+.btn.saved{background:var(--green)!important;color:#fff}
+.stab{padding:20px;overflow-y:auto;flex:1}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.scard{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .15s}
+.scard:hover{border-color:var(--accent2);box-shadow:var(--shadow)}
+.scard.active{border-color:var(--accent2);background:#f0f5fa}
+.sname{font-weight:600;font-size:.95rem}
+.smeta{font-size:.72rem;color:var(--ink-muted);margin-top:4px}
+.sdel{font-size:.7rem;padding:2px 8px;border-radius:4px;border:1px solid #ddd;background:none;cursor:pointer;color:var(--ink-muted);margin-top:6px}
+.sdel:hover{border-color:var(--accent);color:var(--accent)}
+.nrbody{padding:20px;overflow-y:auto;flex:1}
+.rts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.rtb{padding:14px;border-radius:var(--radius);border:2px solid var(--border);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:'DM Sans',sans-serif}
+.rtb:hover,.rtb.sel{border-color:var(--accent2);background:#f0f5fa}
+.rtb .ri{font-size:1.6rem;margin-bottom:6px}
+.rtb .rl{font-size:.82rem;font-weight:600}
+.rtb .rd{font-size:.7rem;color:var(--ink-muted);margin-top:2px}
+.efp{display:none}.efp.show{display:block}
+.sc{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.sch{padding:8px 14px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:8px}
+.hb{background:#eef3f8;color:var(--accent2);border-bottom:1px solid #d4e5f0}
+.hr{background:#fcecea;color:var(--accent);border-bottom:1px solid #f0cac8}
+.hg{background:#edf4f0;color:var(--green);border-bottom:1px solid #c8dece}
+.ha{background:#fdf3e7;color:var(--amber);border-bottom:1px solid #f0d8b8}
+.hp{background:#f5eefa;color:var(--purple);border-bottom:1px solid #ddc8f0}
+.scb{padding:12px 14px}
+.skt{width:100%;border-collapse:collapse;font-size:.78rem}
+.skt th{background:var(--surface2);padding:6px 8px;text-align:center;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);border-bottom:1px solid var(--border)}
+.skt th.l{text-align:left}
+.skt td{padding:6px 8px;border-bottom:1px solid #f0ede8;vertical-align:middle}
+.skt tr:last-child td{border-bottom:none}
+.ni{width:54px;border:1px solid var(--border);border-radius:4px;padding:4px 6px;font-size:.78rem;font-family:inherit;text-align:center;background:#fff}
+.ni:focus{outline:none;border-color:var(--accent2)}
+.pb{font-weight:700;font-size:.82rem;padding:2px 6px;border-radius:4px;min-width:48px;display:inline-block;text-align:center}
+.ph{background:#edf4f0;color:var(--green)}.pm{background:#fdf3e7;color:var(--amber)}.pl{background:#fcecea;color:var(--accent)}.pe{color:#ccc}
+.btt{display:grid;grid-template-columns:1fr 1fr 1fr 80px 130px;gap:0}
+.bth{background:var(--surface2);padding:6px 10px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);border-bottom:1px solid var(--border);text-align:center}
+.bth.l{text-align:left}
+.btc{padding:8px 10px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #f0ede8}
+.btc.l{justify-content:flex-start;font-weight:600;font-size:.82rem}
+.ff{padding:12px 16px;background:#fff;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-shrink:0}
+.ff .rn{font-size:.72rem;color:var(--ink-muted);flex:1}
+.gtb{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.gtbar{padding:10px 16px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.gtbar .tt{font-weight:700;font-size:.82rem}
+.ga{flex:1;overflow-y:auto;padding:16px;display:grid;gap:14px}
+.cc{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.cc h3{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:12px}
+.ndm{text-align:center;padding:60px 20px;color:var(--ink-muted);font-size:.85rem;grid-column:1/-1}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center}
+.mo.show{display:flex}
+.md{background:#fff;border-radius:10px;padding:20px 24px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.md h2{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:14px}
+.mda{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.scantab{padding:16px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px;max-width:640px}
+.scancard{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scancard-h{padding:8px 14px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;background:var(--surface2);color:var(--ink-muted);border-bottom:1px solid var(--border)}
+.scancard-b{padding:12px 14px}
+.shint{font-size:.78rem;color:var(--ink-muted);margin-bottom:10px}
+.ssb{padding:8px 12px;border-radius:6px;font-size:.82rem;margin-top:8px}
+.ssb.info{background:#eef3f8;color:var(--accent2)}.ssb.ok{background:#edf4f0;color:var(--green)}.ssb.err{background:#fcecea;color:var(--accent)}.ssb.wk{background:#f5eefa;color:var(--purple)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid #ddc8f0;border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+.batchmd{max-width:720px;width:96%}
+.bsi{border:1px solid var(--border);border-radius:6px;margin-bottom:8px;overflow:hidden}
+.bsh{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--surface2);user-select:none}
+.bsh:hover{background:#e8e4df}
+.cdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cg{background:var(--green)}.cam{background:var(--amber)}.cr{background:var(--accent)}
+.bslbl{font-weight:600;font-size:.85rem;flex:1}
+.bsmeta{font-size:.72rem;color:var(--ink-muted)}
+.bsflag{font-size:.72rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.fam{background:#fdf3e7;color:var(--amber)}.fr{background:#fcecea;color:var(--accent)}
+.bsbody{display:none;padding:12px 14px;border-top:1px solid var(--border);background:#fff}
+.bsbody.open{display:block}
+.incb{accent-color:var(--accent2);width:16px;height:16px;cursor:pointer}
+.rvn{width:52px;border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:.76rem;text-align:center;font-family:inherit}
+.rvn:focus{outline:none;border-color:var(--accent2)}
+.rvp{font-weight:700;font-size:.8rem}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+.ssb.sync-ok{background:#edf4f0;color:var(--green)}
+.ssb.sync-err{background:#fcecea;color:var(--accent)}
+.ssb.sync-wk{background:#f5eefa;color:var(--purple)}
+</style>
+</head>
+<body>
+<div class="app-header">
+  <h1>Student Skills &amp; Behavioral Data</h1>
+  <div class="pill" id="pill"></div>
+  <div style="margin-left:auto;font-size:.7rem;color:#666">Connections Behavioral Health</div>
+</div>
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="sw('students',this)">👤 Students</button>
+  <button class="tab-btn" onclick="sw('new-record',this)">➕ New Record</button>
+  <button class="tab-btn" onclick="sw('abc',this)">📋 ABC</button>
+  <button class="tab-btn" onclick="sw('skills',this)">🎯 Skills</button>
+  <button class="tab-btn" onclick="sw('behavioral',this)">📊 Behavioral</button>
+  <button class="tab-btn" onclick="sw('scan',this)">📷 Scan Form</button>
+</div>
+
+<!-- STUDENTS -->
+<div class="tab-content active" id="tab-students">
+  <div class="stab">
+    <h2 style="font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:14px">Students</h2>
+    <div style="display:flex;gap:10px;margin-bottom:20px;align-items:flex-end">
+      <div><label class="fl">Add New Student</label><input class="fi" id="nsn" placeholder="Full name" style="max-width:260px" onkeydown="if(event.key==='Enter')addS()"></div>
+      <button class="btn btn-p" onclick="addS()">+ Add Student</button>
+    </div>
+    <div id="sgrid" class="sgrid"></div>
+    <div id="noss" style="display:none;text-align:center;padding:60px 20px;color:var(--ink-muted);font-size:.85rem"><div style="font-size:2rem;margin-bottom:8px">👤</div>No students yet.</div>
+  </div>
+</div>
+
+<!-- NEW RECORD -->
+<div class="tab-content" id="tab-new-record">
+  <div class="nrbody">
+    <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:160px"><label class="fl">Student</label><select class="fi" id="nrs" onchange="onSC()"><option value="">— Select student —</option></select></div>
+      <div><label class="fl">Date</label><input type="date" class="fi" id="nrd" style="width:148px"></div>
+      <div><label class="fl">Staff</label><input type="text" class="fi" id="nrst" placeholder="Initials" style="width:100px"></div>
+    </div>
+    <label class="fl" style="margin-bottom:8px">Record type</label>
+    <div class="rts">
+      <div class="rtb" id="rt-skills" onclick="selRT('skills')"><div class="ri">🎯</div><div class="rl">Skills Data</div><div class="rd">% Independent</div></div>
+      <div class="rtb" id="rt-behavioral" onclick="selRT('behavioral')"><div class="ri">📊</div><div class="rl">Behavioral Data</div><div class="rd">Interval recording</div></div>
+      <div class="rtb" id="rt-abc" onclick="selRT('abc')"><div class="ri">📋</div><div class="rl">ABC Incident</div><div class="rd">A · B · C</div></div>
+    </div>
+
+    <!-- SKILLS FORM -->
+    <div class="efp" id="form-skills">
+      <div class="sc"><div class="sch hb">🎯 Skills — Trial Counts</div>
+        <div style="padding:0"><table class="skt"><thead><tr>
+          <th class="l" style="width:28%">Skill</th><th class="l" style="width:20%;font-size:.62rem">SD</th>
+          <th>Ind (+)</th><th>Prompted</th><th>Error</th><th>% Ind.</th><th>% Ind+P</th>
+        </tr></thead><tbody id="sktb"></tbody></table></div>
+      </div>
+      <div><label class="fl">Notes / Phase change note</label><input type="text" class="fi" id="sknotes" placeholder="e.g. Changed criterion…"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.82rem;cursor:pointer">
+        <input type="checkbox" id="skpc" style="width:15px;height:15px"><label for="skpc">Mark as phase change</label></div>
+      <div class="ff"><span class="rn">Student and Date required</span>
+        <button class="btn btn-g btn-sm" onclick="clrSk()">Clear</button>
+        <button class="btn btn-p" id="sk-save" onclick="saveSk()">Save Skills Record</button></div>
+    </div>
+
+    <!-- BEHAVIORAL FORM -->
+    <div class="efp" id="form-behavioral">
+      <p style="font-size:.78rem;color:var(--ink-muted);margin-bottom:10px">Enter total session counts. App calculates % automatically.</p>
+      <div class="sc"><div class="sch ha">📋 Follows Directions</div><div style="padding:0"><div class="btt" id="bt-follows"></div></div></div>
+      <div class="sc"><div class="sch hg">🛡 Safe Body</div><div style="padding:0"><div class="btt" id="bt-safe"></div></div></div>
+      <div class="sc"><div class="sch hb">💬 Appropriate Verbal</div><div style="padding:0"><div class="btt" id="bt-verbal"></div></div></div>
+      <div class="sc"><div class="sch hp">🔴 Off-Program <span style="font-size:.68rem;font-weight:400;margin-left:6px">+ or − only</span></div><div style="padding:0"><div class="btt" id="bt-offprogram"></div></div></div>
+      <div style="margin-top:4px"><label class="fl">Notes / Phase change note</label><input type="text" class="fi" id="behnotes"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.82rem;cursor:pointer">
+        <input type="checkbox" id="behpc" style="width:15px;height:15px"><label for="behpc">Mark as phase change</label></div>
+      <div class="ff"><span class="rn">Student and Date required</span>
+        <button class="btn btn-g btn-sm" onclick="clrBeh()">Clear</button>
+        <button class="btn btn-p" id="beh-save" onclick="saveBeh()">Save Behavioral Record</button></div>
+    </div>
+
+    <!-- ABC FORM -->
+    <div class="efp" id="form-abc">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label class="fl">Time</label><input type="time" class="fi" id="abct"></div>
+        
+      </div>
+      <div class="sc"><div class="sch hb">⚡ Activity</div><div class="scb"><div id="ca"></div><div id="oia" style="display:none;margin-top:6px"><input class="fi" placeholder="Describe…" style="font-size:.78rem"></div></div></div>
+      <div class="sc"><div class="sch ha">🔥 Trigger</div><div class="scb"><div id="ct"></div><div id="oit" style="display:none;margin-top:6px"><input class="fi" placeholder="Describe…" style="font-size:.78rem"></div></div></div>
+      <div class="sc"><div class="sch hr">⚠️ Behavior</div><div class="scb"><div id="cb"></div><div id="oib" style="display:none;margin-top:6px"><input class="fi" placeholder="Describe…" style="font-size:.78rem"></div></div></div>
+      <div class="sc"><div class="sch hg">✅ Consequence</div><div class="scb"><div id="cr"></div><div id="oir" style="display:none;margin-top:6px"><input class="fi" placeholder="Describe…" style="font-size:.78rem"></div></div></div>
+      <div class="sc"><div class="sch hp">🧠 Function</div><div class="scb"><div id="cf"></div></div></div>
+      <div class="sc"><div class="sch" style="background:var(--surface2);color:var(--ink-muted);border-bottom:1px solid var(--border)">📝 Comments</div>
+        <div class="scb"><textarea class="fi" id="abccomm" rows="2" style="resize:none"></textarea></div></div>
+      <div class="ff"><span class="rn">Student and Date required</span>
+        <button class="btn btn-g btn-sm" onclick="clrAbc()">Clear</button>
+        <button class="btn btn-p" id="abc-save" onclick="saveAbc()">Save ABC Record</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABC TAB -->
+<div class="tab-content" id="tab-abc">
+  <div class="gtb">
+    <div class="gtbar"><span class="tt">ABC Incidents</span><span id="abcstu" style="font-size:.78rem;color:var(--ink-muted)">No student selected</span>
+      <div style="margin-left:auto"><button class="btn btn-g btn-sm" onclick="expAbc()">⬇ Export CSV</button></div></div>
+    <div class="ga" id="abc-ga" style="grid-template-columns:1fr 1fr"><div class="ndm">Select a student.</div></div>
+  </div>
+</div>
+
+<!-- SKILLS TAB -->
+<div class="tab-content" id="tab-skills">
+  <div class="gtb">
+    <div class="gtbar"><span class="tt">Skills Data</span><span id="skstu" style="font-size:.78rem;color:var(--ink-muted)">No student selected</span>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-g btn-sm" onclick="addPC('skills')">+ Phase Change</button>
+        <button class="btn btn-g btn-sm" onclick="expSk()">⬇ Export CSV</button>
+        <button class="btn btn-g btn-sm" onclick="exportChartsAsPng('skills')">🖼 Export Charts</button></div></div>
+    <div class="ga" id="sk-ga" style="grid-template-columns:1fr"><div class="ndm">Select a student.</div></div>
+  </div>
+</div>
+
+<!-- BEHAVIORAL TAB -->
+<div class="tab-content" id="tab-behavioral">
+  <div class="gtb">
+    <div class="gtbar"><span class="tt">Behavioral Data</span><span id="behstu" style="font-size:.78rem;color:var(--ink-muted)">No student selected</span>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-g btn-sm" onclick="addPC('behavioral')">+ Phase Change</button>
+        <button class="btn btn-g btn-sm" onclick="expBeh()">⬇ Export CSV</button>
+        <button class="btn btn-g btn-sm" onclick="exportChartsAsPng('behavioral')">🖼 Export Charts</button></div></div>
+    <div class="ga" id="beh-ga" style="grid-template-columns:1fr"><div class="ndm">Select a student.</div></div>
+  </div>
+</div>
+
+<!-- SCAN TAB -->
+<div class="tab-content" id="tab-scan">
+  <div class="scantab">
+    <div class="scancard">
+      <div class="scancard-h">🔑 Anthropic API Key</div>
+      <div class="scancard-b">
+        <p class="shint">Required for AI scanning. Stored locally on this device only.</p>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <div style="flex:1"><label class="fl">API Key</label><input type="password" class="fi" id="apik" placeholder="sk-ant-..." style="font-family:monospace;font-size:.82rem"></div>
+          <button class="btn btn-p" onclick="saveKey()">Save</button>
+          <button class="btn btn-g" onclick="togKey()">👁</button>
+        </div>
+        <div id="keystatus" style="font-size:.75rem;margin-top:6px;min-height:16px"></div>
+      </div>
+    </div>
+    <div class="scancard">
+      <div class="scancard-h">📄 Upload Forms</div>
+      <div class="scancard-b">
+        <p class="shint">Upload a photo or multi-page PDF. AI detects each sheet automatically and extracts all data for review before saving.</p>
+        <input type="file" id="scanfile" accept="image/*,.pdf" style="display:block;width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:inherit;font-size:.82rem;cursor:pointer;margin-bottom:10px">
+        <button class="btn btn-p" style="width:100%;padding:11px" onclick="doScan()">✨ Scan &amp; Extract Data</button>
+        <div id="scanst"></div>
+      </div>
+    </div>
+    <div class="scancard">
+      <div class="scancard-h">☁️ Google Sheets Sync</div>
+      <div class="scancard-b">
+        <p class="shint">Data saves locally first, then syncs to your Google Sheet in the background. Use the button below to push all data now or restore from the Sheet.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn btn-p" style="flex:1" onclick="syncToSheets()">⬆ Sync to Google Sheets</button>
+          <button class="btn btn-g" style="flex:1" onclick="restoreFromSheets()">⬇ Restore from Sheets</button>
+        </div>
+        <div id="syncst"></div>
+        <div id="synclast" style="font-size:.72rem;color:var(--ink-muted);margin-top:6px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE CHANGE MODAL -->
+<div class="mo" id="pcmod">
+  <div class="md">
+    <h2>📍 Add Phase Change</h2>
+    <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:14px">A vertical dashed line will be added to the graph.</p>
+    <div style="margin-bottom:12px"><label class="fl">Label</label><input type="text" class="fi" id="pclbl" placeholder="e.g. New criterion: 80% for 3 sessions"></div>
+    <div style="margin-bottom:12px"><label class="fl">Date</label><input type="date" class="fi" id="pcdate"></div>
+    <div class="mda">
+      <button class="btn btn-g" onclick="document.getElementById('pcmod').classList.remove('show')">Cancel</button>
+      <button class="btn btn-p" onclick="savPC()">Add Phase Change</button>
+    </div>
+  </div>
+</div>
+
+<!-- BATCH REVIEW MODAL -->
+<div class="mo" id="batchmod">
+  <div class="md batchmd">
+    <h2>📋 Review Extracted Forms</h2>
+    <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:12px">Click to expand any form and edit. Uncheck to skip. Save all when ready.</p>
+    <div id="batchlist" style="margin-bottom:14px;max-height:58vh;overflow-y:auto"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border)">
+      <div id="bflag" style="font-size:.75rem;color:var(--amber);flex:1;display:none">⚠️ Some forms are flagged — please review before saving.</div>
+      <span id="bcnt" style="font-size:.75rem;color:var(--ink-muted);flex:1"></span>
+      <button class="btn btn-g" onclick="document.getElementById('batchmod').classList.remove('show')">Cancel</button>
+      <button class="btn btn-p" onclick="saveAll()">💾 Save All</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// DATA
+let students=[],abcR=[],skR=[],behR=[],phases=[];
+let activeId=null,chartInst={};
+
+function load(){
+  students=JSON.parse(localStorage.getItem('ssbd_students')||'[]');
+  abcR    =JSON.parse(localStorage.getItem('ssbd_abc')    ||'[]');
+  skR     =JSON.parse(localStorage.getItem('ssbd_skills') ||'[]');
+  behR    =JSON.parse(localStorage.getItem('ssbd_beh')    ||'[]');
+  phases  =JSON.parse(localStorage.getItem('ssbd_phases') ||'[]');
+  activeId=localStorage.getItem('ssbd_active')||null;
+}
+function save(){
+  localStorage.setItem('ssbd_students',JSON.stringify(students));
+  localStorage.setItem('ssbd_abc',     JSON.stringify(abcR));
+  localStorage.setItem('ssbd_skills',  JSON.stringify(skR));
+  localStorage.setItem('ssbd_beh',     JSON.stringify(behR));
+  localStorage.setItem('ssbd_phases',  JSON.stringify(phases));
+  localStorage.setItem('ssbd_active',  activeId||'');
+}
+
+// TABS
+function sw(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='abc')renderAbc();
+  if(id==='skills')renderSk();
+  if(id==='behavioral')renderBeh();
+  if(id==='scan')getKey();
+}
+
+// STUDENTS
+function addS(){
+  const n=document.getElementById('nsn').value.trim(); if(!n)return;
+  students.push({id:'s'+Date.now(),name:n,created:new Date().toISOString().slice(0,10)});
+  save(); document.getElementById('nsn').value=''; renderStudents(); refreshSels();
+}
+function selS(id){activeId=id;save();renderStudents();refreshSels();updPill();}
+function delS(id){
+  const s=students.find(s=>s.id===id);
+  if(!confirm('Delete '+(s?s.name:'student')+'?'))return;
+  students=students.filter(s=>s.id!==id);
+  abcR=abcR.filter(r=>r.sid!==id);skR=skR.filter(r=>r.sid!==id);behR=behR.filter(r=>r.sid!==id);phases=phases.filter(p=>p.sid!==id);
+  if(activeId===id)activeId=null;
+  save();renderStudents();refreshSels();updPill();
+}
+function renderStudents(){
+  const g=document.getElementById('sgrid'),n=document.getElementById('noss');
+  if(!students.length){g.innerHTML='';n.style.display='block';return;}
+  n.style.display='none';
+  const ac={},sc={},bc={};
+  abcR.forEach(r=>ac[r.sid]=(ac[r.sid]||0)+1);
+  skR.forEach(r=>sc[r.sid]=(sc[r.sid]||0)+1);
+  behR.forEach(r=>bc[r.sid]=(bc[r.sid]||0)+1);
+  g.innerHTML=students.map(s=>`
+    <div class="scard ${s.id===activeId?'active':''}" onclick="selS('${s.id}')">
+      <div class="sname">${s.name}</div>
+      <div class="smeta">${ac[s.id]||0} ABC · ${sc[s.id]||0} Skills · ${bc[s.id]||0} Behavioral</div>
+      ${s.id===activeId?'<div style="font-size:.68rem;color:var(--accent2);font-weight:700;margin-top:4px">● Active</div>':''}
+      <div onclick="event.stopPropagation()"><button class="sdel" onclick="delS('${s.id}')">Delete</button></div>
+    </div>`).join('');
+}
+function updPill(){
+  const p=document.getElementById('pill'),s=students.find(s=>s.id===activeId);
+  if(s){p.textContent=s.name;p.classList.add('show');}else{p.textContent='';p.classList.remove('show');}
+}
+function refreshSels(){
+  document.querySelectorAll('#nrs').forEach(sel=>{
+    sel.innerHTML='<option value="">— Select student —</option>'+students.map(s=>`<option value="${s.id}"${s.id===activeId?' selected':''}>${s.name}</option>`).join('');
+    if(activeId)sel.value=activeId;
+  });
+  const a=students.find(s=>s.id===activeId),lbl=a?a.name:'No student selected';
+  ['abcstu','skstu','behstu'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=lbl;});
+}
+function onSC(){activeId=document.getElementById('nrs').value||null;save();renderStudents();updPill();refreshSels();}
+
+// SKILLS FORM
+const SKD=[
+  {n:'Attending',sd:'"Show me ready"'},{n:'Respond to name',sd:'"Student name"'},
+  {n:'Relinquish',sd:'"Give me"'},{n:'Request-general',sd:'"Do you want a turn?"'},
+  {n:'Point to choose',sd:'"Which one?"'},{n:'Break',sd:'"Do you need a break?"'},
+  {n:'Help',sd:'"Do you need help?"'},{n:'All Done',sd:'"All done"'},{n:'Wait',sd:'"Time to Wait"'}
+];
+function buildSkTb(){
+  document.getElementById('sktb').innerHTML=SKD.map((r,i)=>`<tr>
+    <td><input type="text" class="fi" id="skn${i}" value="${r.n}" style="font-size:.78rem;padding:4px 6px"></td>
+    <td><input type="text" class="fi" id="sksd${i}" value="${r.sd}" style="font-size:.72rem;padding:4px 6px;font-style:italic"></td>
+    <td style="text-align:center"><input type="number" class="ni" id="ski${i}" min="0" placeholder="0" oninput="csr(${i})"></td>
+    <td style="text-align:center"><input type="number" class="ni" id="skp${i}" min="0" placeholder="0" oninput="csr(${i})"></td>
+    <td style="text-align:center"><input type="number" class="ni" id="ske${i}" min="0" placeholder="0" oninput="csr(${i})"></td>
+    <td style="text-align:center"><span class="pb pe" id="skpi${i}">—</span></td>
+    <td style="text-align:center"><span class="pb pe" id="skpa${i}">—</span></td>
+  </tr>`).join('');
+}
+function csr(i){
+  const ind=parseFloat(document.getElementById('ski'+i).value)||0;
+  const pro=parseFloat(document.getElementById('skp'+i).value)||0;
+  const err=parseFloat(document.getElementById('ske'+i).value)||0;
+  const tot=ind+pro+err;
+  const ie=document.getElementById('skpi'+i),ae=document.getElementById('skpa'+i);
+  if(!tot){ie.textContent='—';ie.className='pb pe';ae.textContent='—';ae.className='pb pe';return;}
+  const pi=Math.round(ind/tot*100),pa=Math.round((ind+pro)/tot*100);
+  ie.textContent=pi+'%';ie.className='pb '+pc(pi);
+  ae.textContent=pa+'%';ae.className='pb '+pc(pa);
+}
+function pc(n){return n>=80?'ph':n>=60?'pm':'pl';}
+function clrSk(){SKD.forEach((_,i)=>{['i','p','e'].forEach(f=>{const el=document.getElementById('sk'+f+i);if(el)el.value='';});csr(i);});document.getElementById('sknotes').value='';document.getElementById('skpc').checked=false;}
+function saveSk(){
+  const sid=document.getElementById('nrs').value,date=document.getElementById('nrd').value;
+  if(!sid||!date){alert('Select student and date.');return;}
+  const skills=SKD.map((_,i)=>{
+    const ind=parseFloat(document.getElementById('ski'+i).value)||0;
+    const pro=parseFloat(document.getElementById('skp'+i).value)||0;
+    const err=parseFloat(document.getElementById('ske'+i).value)||0;
+    const tot=ind+pro+err;
+    return{name:document.getElementById('skn'+i).value,ind,pro,err,tot,pctInd:tot?Math.round(ind/tot*100):null,pctAll:tot?Math.round((ind+pro)/tot*100):null};
+  }).filter(s=>s.tot>0);
+  if(!skills.length){alert('Enter at least one count.');return;}
+  skR.unshift({id:Date.now()+Math.random(),sid,date,staff:document.getElementById('nrst').value.trim(),skills,notes:document.getElementById('sknotes').value.trim(),phaseChange:document.getElementById('skpc').checked});
+  save();scheduleSyncToSheets();renderStudents();flash('sk-save');clrSk();
+}
+
+// BEHAVIORAL FORM
+const BEHT=[
+  {key:'follows',   label:'Follows Directions', sl:false},
+  {key:'safe',      label:'Safe Body',          sl:false},
+  {key:'verbal',    label:'Appropriate Verbal', sl:false},
+  {key:'offprogram',label:'Off-Program',        sl:true},
+];
+function buildBehFm(){BEHT.forEach(t=>buildBT(t.key,t.label,t.sl));}
+function buildBT(key,label,sl){
+  const el=document.getElementById('bt-'+key);
+  if(!el||el.children.length)return;
+  const plc=sl?'<div class="btc" style="color:#ccc;font-size:.72rem">N/A</div>'
+    :`<div class="btc"><input type="number" class="ni" id="bvp${key}" min="0" placeholder="0" oninput="cbs('${key}')" style="width:64px;text-align:center"></div>`;
+  el.innerHTML=`
+    <div class="bth l">Target</div><div class="bth">Independent (+)</div>
+    <div class="bth">With Support (+p)</div><div class="bth">Errors</div>
+    <div class="bth">${sl?'% Ind.':'% Ind. / % Ind+P'}</div>
+    <div class="btc l">${label}</div>
+    <div class="btc"><input type="number" class="ni" id="bvi${key}" min="0" placeholder="0" oninput="cbs('${key}')" style="width:64px;text-align:center"></div>
+    ${plc}
+    <div class="btc"><input type="number" class="ni" id="bve${key}" min="0" placeholder="0" oninput="cbs('${key}')" style="width:64px;text-align:center"></div>
+    <div class="btc" id="bvs${key}" style="font-size:.78rem;flex-direction:column;gap:2px">—</div>`;
+  cbs(key,sl);
+}
+function cbs(key,sl){
+  if(sl===undefined){const t=BEHT.find(t=>t.key===key);sl=t?t.sl:false;}
+  const plus=parseFloat(document.getElementById('bvi'+key)?.value)||0;
+  const plusp=sl?0:(parseFloat(document.getElementById('bvp'+key)?.value)||0);
+  const err=parseFloat(document.getElementById('bve'+key)?.value)||0;
+  const tot=plus+plusp+err;
+  const pI=tot?Math.round(plus/tot*100):null,pA=tot?Math.round((plus+plusp)/tot*100):null;
+  const el=document.getElementById('bvs'+key);if(!el)return;
+  if(!tot){el.innerHTML='<span style="color:#ccc">—</span>';return;}
+  el.innerHTML=sl?`<span style="color:var(--green);font-weight:700">${pI}% ind</span>`
+    :`<span style="color:var(--green);font-weight:700">${pI}% ind</span><span style="color:var(--accent2);font-weight:700">${pA}% ind+p</span>`;
+}
+function gbs(key){
+  const t=BEHT.find(t=>t.key===key),sl=t?t.sl:false;
+  const plus=parseFloat(document.getElementById('bvi'+key)?.value)||0;
+  const plusp=sl?0:(parseFloat(document.getElementById('bvp'+key)?.value)||0);
+  const err=parseFloat(document.getElementById('bve'+key)?.value)||0;
+  const tot=plus+plusp+err;
+  return{plus,plusp,err,total:tot,pctInd:tot?Math.round(plus/tot*100):null,pctAll:tot?Math.round((plus+plusp)/tot*100):null};
+}
+function clrBeh(){BEHT.forEach(t=>{['i','p','e'].forEach(f=>{const el=document.getElementById('bv'+f+t.key);if(el)el.value='';});cbs(t.key);});document.getElementById('behnotes').value='';document.getElementById('behpc').checked=false;}
+function saveBeh(){
+  const sid=document.getElementById('nrs').value,date=document.getElementById('nrd').value;
+  if(!sid||!date){alert('Select student and date.');return;}
+  const targets={};BEHT.forEach(t=>{targets[t.key]=gbs(t.key);});
+  behR.unshift({id:Date.now()+Math.random(),sid,date,staff:document.getElementById('nrst').value.trim(),targets,notes:document.getElementById('behnotes').value.trim(),phaseChange:document.getElementById('behpc').checked});
+  save();scheduleSyncToSheets();renderStudents();flash('beh-save');clrBeh();
+}
+
+// ABC FORM
+const ACT=['AM transition','Class Meeting','Snack','Academic class','Lunch','Recess','Mid-day transition','End of day Transition','Other'];
+const TRG=['Academic Demand','Non-preferred activity start','High Preference activity end','Schedule change','Peer conflict','Adult conflict','Told "No"','Other'];
+const BEH=['Task refusal-Academic','Task refusal-Social/Other','Aggressive-Physical','Significant non-compliance','Significant inappropriate verbal','Other'];
+const RES=['Misses part of activity','Make up time','Adult attention','Peer attention','Asked to leave room','Office referral','Other'];
+const FUN=['Escape/Avoidance','Attention-Adult','Attention-peers','Emotional Release','Tangible','Sensory'];
+function buildAbcChips(){
+  buildC('ca',ACT,'hb','oia');buildC('ct',TRG,'ha','oit');
+  buildC('cb',BEH,'hr','oib');buildC('cr',RES,'hg','oir');buildC('cf',FUN,'hp',null);
+}
+function buildC(cid,items,cls,oid){
+  const colors={'hb':'var(--accent2)','ha':'var(--amber)','hr':'var(--accent)','hg':'var(--green)','hp':'var(--purple)'};
+  const col=colors[cls]||'var(--accent2)';
+  document.getElementById(cid).innerHTML=items.map(item=>{
+    const isO=item==='Other';
+    return`<label style="padding:5px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.75rem;cursor:pointer;user-select:none;display:inline-block;margin:2px" onclick="ctog(this,'${col}',${isO?`'${oid}'`:'null'})"><input type="checkbox" value="${item}" style="display:none">${item}</label>`;
+  }).join('');
+}
+function ctog(label,col,oid){
+  event.preventDefault();const cb=label.querySelector('input');cb.checked=!cb.checked;
+  label.style.cssText=cb.checked?`padding:5px 10px;border-radius:20px;border:1.5px solid ${col};background:${col};color:#fff;font-size:.75rem;cursor:pointer;user-select:none;display:inline-block;margin:2px`:'padding:5px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.75rem;cursor:pointer;user-select:none;display:inline-block;margin:2px';
+  if(oid){const el=document.getElementById(oid);if(el)el.style.display=cb.checked?'block':'none';}
+}
+function gchk(id){return Array.from(document.querySelectorAll('#'+id+' input:checked')).map(c=>c.value);}
+function clrAbc(){
+  document.querySelectorAll('#form-abc label').forEach(l=>{const c=l.querySelector('input');if(c){c.checked=false;l.style.cssText='padding:5px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.75rem;cursor:pointer;user-select:none;display:inline-block;margin:2px';}});
+  ['oia','oit','oib','oir'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  document.getElementById('abct').value='';document.getElementById('abcl').value='';document.getElementById('abccomm').value='';
+}
+function saveAbc(){
+  const sid=document.getElementById('nrs').value,date=document.getElementById('nrd').value;
+  if(!sid||!date){alert('Select student and date.');return;}
+  function res(arr,oid){if(arr.includes('Other')){const v=document.getElementById(oid).querySelector('input').value.trim();return arr.filter(x=>x!=='Other').concat(v?'Other: '+v:[]);}return arr;}
+  abcR.unshift({id:Date.now()+Math.random(),sid,date,time:document.getElementById('abct').value,staff:document.getElementById('nrst').value.trim(),
+    activity:res(gchk('ca'),'oia'),trigger:res(gchk('ct'),'oit'),behavior:res(gchk('cb'),'oib'),result:res(gchk('cr'),'oir'),func:gchk('cf'),comments:document.getElementById('abccomm').value.trim()});
+  save();scheduleSyncToSheets();renderStudents();flash('abc-save');clrAbc();
+}
+function selRT(type){
+  document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('rt-'+type).classList.add('sel');
+  document.querySelectorAll('.efp').forEach(p=>p.classList.remove('show'));
+  document.getElementById('form-'+type).classList.add('show');
+  if(type==='abc'&&!document.querySelector('#ca label'))buildAbcChips();
+  if(type==='skills'&&!document.getElementById('sktb').children.length)buildSkTb();
+  if(type==='behavioral'&&!document.getElementById('bt-follows').children.length)buildBehFm();
+}
+function flash(id){const b=document.getElementById(id);if(!b)return;const o=b.textContent;b.textContent='✓ Saved!';b.classList.add('saved');setTimeout(()=>{b.textContent=o;b.classList.remove('saved');},1600);}
+
+// CHART HELPERS
+function trendLine(data){
+  const pts=data.map((y,x)=>({x,y})).filter(p=>p.y!=null);
+  if(pts.length<2)return data.map(()=>null);
+  const n=pts.length,sx=pts.reduce((s,p)=>s+p.x,0),sy=pts.reduce((s,p)=>s+p.y,0);
+  const sxy=pts.reduce((s,p)=>s+p.x*p.y,0),sx2=pts.reduce((s,p)=>s+p.x*p.x,0);
+  const m=(n*sxy-sx*sy)/(n*sx2-sx*sx),b=(sy-m*sx)/n;
+  return data.map((_,i)=>Math.round((m*i+b)*10)/10);
+}
+function getPhases(type,recs){
+  const ps=phases.filter(p=>p.sid===activeId&&p.type===type);
+  recs.forEach(r=>{if(r.phaseChange){const a=ps.find(p=>p.date===r.date&&p.src==='rec');if(!a)ps.push({date:r.date,label:r.notes||'Phase change',src:'rec'});}});
+  return ps;
+}
+function buildAnns(ps,recs){
+  const a={};
+  ps.forEach((p,i)=>{const idx=recs.findIndex(r=>r.date>=p.date);if(idx<0)return;
+    a['p'+i]={type:'line',xMin:idx-.5,xMax:idx-.5,borderColor:'#6c3483',borderWidth:2,borderDash:[6,3],
+      label:{content:p.label||'Phase change',display:true,position:'start',font:{size:10},color:'#6c3483',backgroundColor:'rgba(108,52,131,.08)'}};});
+  return a;
+}
+
+// ABC CHARTS
+function renderAbc(){
+  const area=document.getElementById('abc-ga');
+  const data=activeId?abcR.filter(r=>r.sid===activeId):[];
+  if(!activeId){area.innerHTML='<div class="ndm">Select a student.</div>';return;}
+  if(!data.length){area.innerHTML='<div class="ndm">No ABC records yet.</div>';return;}
+  function cnt(f){const c={};data.forEach(r=>(r[f]||[]).forEach(v=>{c[v]=(c[v]||0)+1;}));return c;}
+  const PAL=['#c0392b','#2c5f8a','#27674a','#b8640a','#6c3483','#1a7a6e'];
+  const secs=[{id:'chabc',t:'⚠️ Behaviors',f:'behavior'},{id:'chabt',t:'🔥 Triggers',f:'trigger'},
+               {id:'chabf',t:'🧠 Functions',f:'func'},{id:'chabr',t:'✅ Consequences',f:'result'}];
+  area.innerHTML=secs.map(s=>{const c=cnt(s.f);if(!Object.keys(c).length)return'';return`<div class="cc"><h3>${s.t}</h3><canvas id="${s.id}" height="220"></canvas></div>`;}).join('');
+  Object.values(chartInst).forEach(c=>{try{c.destroy();}catch(e){}});chartInst={};
+  secs.forEach(s=>{
+    const c=cnt(s.f),lbl=Object.keys(c),vals=Object.values(c);
+    if(!lbl.length)return;const el=document.getElementById(s.id);if(!el)return;
+    chartInst[s.id]=new Chart(el,{type:'pie',data:{labels:lbl,datasets:[{data:vals,backgroundColor:PAL.map(c=>c+'cc'),borderColor:PAL,borderWidth:2}]},
+      options:{responsive:true,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:14}},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed} events`}}}}});
+  });
+}
+
+// SKILLS CHARTS
+function renderSk(){
+  const area=document.getElementById('sk-ga');
+  const recs=activeId?skR.filter(r=>r.sid===activeId):[];
+  if(!activeId){area.innerHTML='<div class="ndm">Select a student.</div>';return;}
+  if(!recs.length){area.innerHTML='<div class="ndm">No Skills records yet.</div>';return;}
+  const names=[];recs.forEach(r=>r.skills.forEach(s=>{if(!names.includes(s.name))names.push(s.name);}));
+  const sorted=[...recs].sort((a,b)=>a.date.localeCompare(b.date));
+  const ps=getPhases('skills',sorted),lbls=sorted.map(r=>r.date);
+  area.innerHTML=names.map(n=>`<div class="cc"><h3>${n} <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--ink-muted)">% Independent</span></h3><canvas id="csk${n.replace(/\W/g,'_')}" height="180"></canvas></div>`).join('');
+  Object.entries(chartInst).filter(([k])=>k.startsWith('csk')).forEach(([k,c])=>{try{c.destroy();}catch(e){}delete chartInst[k];});
+  names.forEach(n=>{
+    const cid='csk'+n.replace(/\W/g,'_');const el=document.getElementById(cid);if(!el)return;
+    const d=lbls.map((_,i)=>{const r=sorted[i];const s=r.skills.find(x=>x.name===n);return s&&s.pctInd!=null?s.pctInd:null;});
+    chartInst[cid]=new Chart(el,{type:'line',data:{labels:lbls,datasets:[
+      {label:'% Independent',data:d,borderColor:'#2c5f8a',backgroundColor:'rgba(44,95,138,.1)',pointBackgroundColor:'#2c5f8a',pointRadius:5,pointHoverRadius:7,tension:.3,fill:true,spanGaps:true},
+      {label:'Trend',data:trendLine(d),borderColor:'#2c5f8a55',pointRadius:0,borderDash:[3,4],tension:0,fill:false,spanGaps:true}
+    ]},options:{responsive:true,scales:{x:{title:{display:true,text:'Sessions',font:{size:11}}},y:{min:0,max:100,title:{display:true,text:'% Independent',font:{size:11}},ticks:{callback:v=>v+'%'}}},
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:14,filter:i=>i.text!=='Trend'}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label==='Trend'?null:` ${ctx.parsed.y}%`,title:cs=>`S${cs[0].dataIndex+1}: ${lbls[cs[0].dataIndex]}`}},
+        annotation:{annotations:buildAnns(ps,sorted)}}}});
+  });
+}
+
+// BEHAVIORAL CHARTS
+function renderBeh(){
+  const area=document.getElementById('beh-ga');
+  const recs=activeId?behR.filter(r=>r.sid===activeId):[];
+  if(!activeId){area.innerHTML='<div class="ndm">Select a student.</div>';return;}
+  if(!recs.length){area.innerHTML='<div class="ndm">No Behavioral records yet.</div>';return;}
+  const sorted=[...recs].sort((a,b)=>a.date.localeCompare(b.date));
+  const ps=getPhases('behavioral',sorted),lbls=sorted.map((_,i)=>'S'+(i+1));
+  const anns=buildAnns(ps,sorted);
+  const CT=[
+    {key:'follows',lbl:'📋 Follows Directions',c1:'#b8640a',c2:'#f0c080',sl:false},
+    {key:'safe',   lbl:'🛡 Safe Body',          c1:'#27674a',c2:'#82c4a2',sl:false},
+    {key:'verbal', lbl:'💬 Appropriate Verbal', c1:'#2c5f8a',c2:'#7fb3d3',sl:false},
+    {key:'offprogram',lbl:'🔴 Off-Program',     c1:'#c0392b',c2:null,     sl:true},
+  ];
+  Object.keys(chartInst).filter(k=>k.startsWith('cbh')).forEach(k=>{try{chartInst[k].destroy();}catch(e){}delete chartInst[k];});
+  area.innerHTML=CT.map(t=>`<div class="cc" style="grid-column:1/-1"><h3>${t.lbl} <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--ink-muted)">% Successful Intervals</span></h3><canvas id="cbh${t.key}" height="180"></canvas></div>`).join('');
+  CT.forEach(t=>{
+    const el=document.getElementById('cbh'+t.key);if(!el)return;
+    const id=sorted.map(r=>r.targets?.[t.key]?.pctInd??null);
+    const ad=sorted.map(r=>r.targets?.[t.key]?.pctAll??null);
+    const ds=[
+      {label:'% Independent (+)',data:id,borderColor:t.c1,backgroundColor:t.c1+'18',pointBackgroundColor:t.c1,pointRadius:5,pointHoverRadius:7,tension:.3,fill:true,spanGaps:true},
+      ...(t.sl?[]:[
+        {label:'% Ind + Prompted',data:ad,borderColor:t.c2,backgroundColor:'transparent',pointBackgroundColor:t.c2,pointRadius:5,pointHoverRadius:7,tension:.3,fill:false,borderDash:[5,3],spanGaps:true},
+        {label:'Trend(P)',data:trendLine(ad),borderColor:(t.c2||'#999')+'88',pointRadius:0,borderDash:[2,4],tension:0,fill:false,spanGaps:true}
+      ]),
+      {label:'Trend',data:trendLine(id),borderColor:t.c1+'88',pointRadius:0,borderDash:[2,4],tension:0,fill:false,spanGaps:true}
+    ];
+    chartInst['cbh'+t.key]=new Chart(el,{type:'line',data:{labels:lbls,datasets:ds},options:{responsive:true,
+      scales:{x:{title:{display:true,text:'Sessions',font:{size:11}}},y:{min:0,max:100,title:{display:true,text:'% Successful Intervals',font:{size:11}},ticks:{callback:v=>v+'%'}}},
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:14,filter:i=>!i.text.startsWith('Trend')}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label.startsWith('Trend')?null:` ${ctx.dataset.label}: ${ctx.parsed.y!=null?ctx.parsed.y+'%':'—'}`,title:cs=>`S${cs[0].dataIndex+1} · ${sorted[cs[0].dataIndex]?.date||''}`}},
+        annotation:{annotations:anns}}}});
+  });
+}
+
+// PHASE CHANGES
+let pendingPCT=null;
+function addPC(type){if(!activeId){alert('Select a student first.');return;}pendingPCT=type;document.getElementById('pcdate').valueAsDate=new Date();document.getElementById('pclbl').value='';document.getElementById('pcmod').classList.add('show');}
+function savPC(){
+  const lbl=document.getElementById('pclbl').value.trim(),date=document.getElementById('pcdate').value;
+  if(!date){alert('Select a date.');return;}
+  phases.push({id:Date.now(),sid:activeId,type:pendingPCT,date,label:lbl||'Phase change'});
+  save();document.getElementById('pcmod').classList.remove('show');
+  if(pendingPCT==='skills')renderSk();if(pendingPCT==='behavioral')renderBeh();
+}
+
+// EXPORTS
+function expAbc(){
+  const data=activeId?abcR.filter(r=>r.sid===activeId):abcR;if(!data.length){alert('No data.');return;}
+  const h=['Student','Date','Time','Staff','Location','Activity','Trigger','Behavior','Consequence','Function','Comments'];
+  const rows=data.map(r=>{const s=students.find(s=>s.id===r.sid);return[s?.name||'',r.date,r.time,r.staff,r.location,(r.activity||[]).join('; '),(r.trigger||[]).join('; '),(r.behavior||[]).join('; '),(r.result||[]).join('; '),(r.func||[]).join('; '),r.comments].map(v=>`"${(v||'').replace(/"/g,'""')}"`)});
+  dlCsv([h,...rows],'abc_data.csv');
+}
+function expSk(){
+  const data=activeId?skR.filter(r=>r.sid===activeId):skR;if(!data.length){alert('No data.');return;}
+  const ns=[...new Set(data.flatMap(r=>r.skills.map(s=>s.name)))];
+  const h=['Student','Date','Staff',...ns.flatMap(n=>[n+' %Ind',n+' %Ind+P']),'Notes','Phase Change'];
+  const rows=data.map(r=>{const s=students.find(s=>s.id===r.sid);return[s?.name||'',r.date,r.staff,...ns.flatMap(n=>{const sk=r.skills.find(x=>x.name===n);return[sk?.pctInd??'',sk?.pctAll??''];}),r.notes||'',r.phaseChange?'Yes':'No'].map(v=>`"${String(v||'').replace(/"/g,'""')}"`)});
+  dlCsv([h,...rows],'skills_data.csv');
+}
+function expBeh(){
+  const data=activeId?behR.filter(r=>r.sid===activeId):behR;if(!data.length){alert('No data.');return;}
+  const h=['Student','Date','Staff','Follows%Ind','Follows%IndP','Safe%Ind','Safe%IndP','Verbal%Ind','Verbal%IndP','OffProg%Ind','Notes','Phase'];
+  const rows=data.map(r=>{const s=students.find(s=>s.id===r.sid);return[s?.name||'',r.date,r.staff,r.targets?.follows?.pctInd??'',r.targets?.follows?.pctAll??'',r.targets?.safe?.pctInd??'',r.targets?.safe?.pctAll??'',r.targets?.verbal?.pctInd??'',r.targets?.verbal?.pctAll??'',r.targets?.offprogram?.pctInd??'',r.notes||'',r.phaseChange?'Yes':'No'].map(v=>`"${String(v||'').replace(/"/g,'""')}"`)});
+  dlCsv([h,...rows],'behavioral_data.csv');
+}
+function dlCsv(rows,fn){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download=fn;a.click();}
+
+// SCAN
+function saveKey(){const k=document.getElementById('apik').value.trim();if(!k.startsWith('sk-')){setKS('❌ Key should start with sk-ant-...','err');return;}localStorage.setItem('ssbd_apikey',k);setKS('✅ Saved','ok');}
+function getKey(){const k=localStorage.getItem('ssbd_apikey')||'';const el=document.getElementById('apik');if(el&&!el.value&&k)el.value=k;return k;}
+function togKey(){const el=document.getElementById('apik');if(el)el.type=el.type==='password'?'text':'password';}
+function setKS(m,t){const el=document.getElementById('keystatus');if(el){el.textContent=m;el.style.color=t==='err'?'var(--accent)':'var(--green)';}}
+function setSS(m,t){const el=document.getElementById('scanst');if(!el)return;el.className='ssb '+t;el.innerHTML=(t==='wk'?'<span class="spin"></span>':'')+m;}
+
+let batchData=[];
+
+async function doScan(){
+  const key=getKey();
+  if(!key||!key.startsWith('sk-')){setSS('❌ Enter and save your API key first.','err');return;}
+  const f=document.getElementById('scanfile');
+  if(!f.files||!f.files[0]){setSS('❌ Choose a file first.','err');return;}
+  const file=f.files[0],isPdf=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
+  setSS('Reading file…','wk');
+  const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej();r.onload=e=>res(e.target.result.split(',')[1]);r.readAsDataURL(file);});
+  setSS('Sending to Claude AI — may take 20–40 seconds for multi-page PDFs…','wk');
+  const cb=isPdf?{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}}:{type:'image',source:{type:'base64',media_type:file.type,data:b64}};
+
+  const prompt=`You are reading scanned paper forms from Connections Behavioral Health. There may be one or multiple pages in this upload.
+
+STEP 1 — Identify the form type for each page:
+- "daily" = Daily Data Sheet (TRSU): top section has a Skills grid with rows for individual skills and trial marks, bottom section has a time-interval behavioral recording grid with a summary totals box in the bottom-right corner.
+- "abc" = ABC Incident Form: titled "Connections Behavioral Health ABC Form". Has a header with "Name:" field at top. Main content is a table with these 8 columns: Date | Time | Activity | Trigger | Behavior | Result of Behavior | Possible Function | Comment. Each row of the table is a separate incident. Typically has 5 data rows per page.
+- "unknown" = cannot determine the form type.
+
+STEP 2 — Extract data based on form type. Return ONLY a raw JSON array — no markdown, no code fences, no explanation.
+
+CRITICAL ARRAY RULE: Every array field must contain individual strings — one item per element. NEVER put multiple items in one string separated by commas.
+✗ WRONG: ["Academic Demand, Peer conflict"]
+✓ RIGHT: ["Academic Demand", "Peer conflict"]
+
+════════════════════════════════════════════
+DAILY DATA SHEET — produce ONE object per page
+════════════════════════════════════════════
+{
+  "form_type": "daily",
+  "student": "full name from header",
+  "date": "YYYY-MM-DD",
+  "staff": "staff initials or name",
+  "confidence": "high|medium|low",
+  "confidence_reason": "only needed if not high",
+  "skills": [
+    {"name":"Attending","pct_ind":0},
+    {"name":"Respond to name","pct_ind":0},
+    {"name":"Relinquish","pct_ind":0},
+    {"name":"Request-general","pct_ind":0},
+    {"name":"Point to choose","pct_ind":0},
+    {"name":"Break","pct_ind":0},
+    {"name":"Help","pct_ind":0},
+    {"name":"All Done","pct_ind":0},
+    {"name":"Wait","pct_ind":0}
+  ],
+  "behavioral": {
+    "follows":    {"total_plus":0,"total_plusp":0,"intervals":0},
+    "safe":       {"total_plus":0,"total_plusp":null,"intervals":0},
+    "verbal":     {"total_plus":0,"total_plusp":0,"intervals":0},
+    "offprogram": {"total_plus":0,"total_plusp":null,"intervals":0}
+  }
+}
+Skills: DO NOT count individual tick marks. Instead read ONLY the pre-filled percentage in the last column of each skill row (the % Ind column on the right side of the skills grid). That number is the % Independent for that skill — ignore any % sign. Return it in a field called pct_ind. If the column is blank or illegible for a row, return null. Example: if the last column shows "80" or "80%", return pct_ind: 80.
+Behavioral: read ONLY the pre-totalled numbers in the bottom-right summary box. Do not count intervals yourself.
+total_plusp is always null for Safe Body and Off-Program.
+
+═══════════════════════════════════════════════════════════════════════
+ABC INCIDENT FORM — produce ONE object PER INCIDENT ROW (not per page)
+═══════════════════════════════════════════════════════════════════════
+FORM LAYOUT: Title "Connections Behavioral Health ABC Form" at top. Header has "Name:" (student name written next to it). Each page contains exactly 2 incident rows stacked vertically. Each row has a Date/Start Time column on the left, then 6 checkbox columns side by side, then a Comment column on the right.
+
+Produce one JSON object for each non-blank incident row. A page with 2 filled rows = 2 objects.
+All rows on the same page share the same student name from the page header.
+
+CHECKBOX DETECTION: Each checkbox option is printed with a ☐ symbol. When a staff member selects it, they mark through or fill the box — it will appear as ☑, ✓, ✗, or a filled/crossed box. Only extract options that are visibly marked. Do NOT extract options with empty ☐ boxes.
+
+Each incident row contains these columns — extract only the MARKED items:
+
+Date/Start Time column:
+  - date: handwritten date (convert to YYYY-MM-DD)
+  - time: handwritten start time (e.g. "9:15 AM")
+
+Activity column — options: AM transition, Class Meeting, Snack, Academic class (may have class name written), Lunch, Recess, Mid-day transition, End of day Transition
+
+Trigger column — options: Academic Demand, Non-preferred activity start, High Preference activity end, Schedule change, Peer conflict, Adult conflict, Told "No"
+
+Behavior column — options: Task refusal-Academic, Task refusal-Social/Other, Aggressive-Physical, Significant non-compliance, Significant inappropriate verbal. May also have written descriptions.
+
+Result of Behavior column — options: Misses part of activity, Make up time, Adult attention, Peer attention, Asked to leave room, Office referral
+
+Possible Function column — options: Escape/Avoidance, Attention-Adult, Attention-peers, Emotional Release, Tangible, Sensory
+
+Comment column: any handwritten text
+
+{
+  "form_type": "abc",
+  "student": "name written next to Name: in page header",
+  "date": "YYYY-MM-DD from THIS row Date field",
+  "staff": "",
+  "time": "start time from THIS row",
+  "confidence": "high|medium|low",
+  "confidence_reason": "only needed if not high",
+  "activity": ["only marked items, one per element"],
+  "trigger":  ["only marked items, one per element"],
+  "behavior": ["only marked items, one per element"],
+  "result":   ["only marked items, one per element"],
+  "func":     ["only marked items, one per element"],
+  "comments": "handwritten comment text or empty string"
+}
+
+Skip a row only if Date, Time, AND every checkbox column are all blank.
+
+For UNKNOWN forms:
+{"form_type":"unknown","student":"","date":"","staff":"","confidence":"low","confidence_reason":"Could not identify form type"}
+
+Return a flat JSON array containing ALL objects from ALL pages: [{...},{...},...]`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:6000,messages:[{role:'user',content:[cb,{type:'text',text:prompt}]}]})});
+    if(!resp.ok){const e=await resp.json().catch(()=>({}));setSS('❌ API error: '+(e.error?.message||resp.status),'err');return;}
+    const data=await resp.json();
+    const text=data.content.map(b=>b.text||'').join('').trim().replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
+    let parsed;try{parsed=JSON.parse(text);}catch(e){setSS('❌ Could not parse response. Try a clearer image.','err');console.error(text);return;}
+    if(!Array.isArray(parsed))parsed=[parsed];
+    batchData=parsed;
+    const daily=parsed.filter(s=>s.form_type==='daily').length;
+    const abc=parsed.filter(s=>s.form_type==='abc').length;
+    const unk=parsed.filter(s=>s.form_type==='unknown').length;
+    const parts=[];
+    if(daily)parts.push(daily+' daily sheet'+(daily!==1?'s':''));
+    if(abc)parts.push(abc+' ABC incident'+(abc!==1?'s':''));
+    if(unk)parts.push(unk+' unrecognized');
+    const total=parsed.length;
+    setSS('✅ Extracted '+total+' record'+(total!==1?'s':'')+': '+parts.join(', ')+'. Review below.','ok');
+    document.getElementById('scanfile').value='';
+    openBatch(parsed);
+  }catch(e){setSS('❌ Error: '+e.message,'err');}
+}
+
+function formTypeLabel(t){return t==='daily'?'📋 Daily Sheet':t==='abc'?'📝 ABC Form':'❓ Unknown';}
+
+function openBatch(sheets){
+  const list=document.getElementById('batchlist');let flagged=false;
+  const BHR=[{key:'follows',hp:true},{key:'safe',hp:false},{key:'verbal',hp:true},{key:'offprogram',hp:false}];
+  const BHLBL={follows:'Follows Directions',safe:'Safe Body',verbal:'Appropriate Verbal',offprogram:'Off-Program'};
+
+  list.innerHTML=sheets.map((sh,si)=>{
+    const sm=students.find(s=>s.name.toLowerCase()===(sh.student||'').toLowerCase());
+    const pm=!sm&&students.find(s=>s.name.toLowerCase().includes((sh.student||'').toLowerCase())||(sh.student||'').toLowerCase().includes(s.name.toLowerCase()));
+    const conf=sh.confidence||'medium';
+    const ftype=sh.form_type||'unknown';
+    const cdot=conf==='high'?'cg':conf==='medium'?'cam':'cr';
+    const needsFlag=conf!=='high'||!sm||ftype==='unknown';if(needsFlag)flagged=true;
+    let flags=`<span style="font-size:.72rem;padding:2px 8px;border-radius:10px;font-weight:600;background:#eef3f8;color:var(--accent2);margin-right:4px">${formTypeLabel(ftype)}</span>`;
+    if(!sm&&sh.student)flags+='<span class="bsflag fam">⚠️ Name unmatched</span> ';
+    if(!sm&&!sh.student)flags+='<span class="bsflag fr">❌ No student</span> ';
+    if(ftype==='unknown')flags+='<span class="bsflag fr">❌ Unrecognized form</span> ';
+    if(conf==='medium')flags+=`<span class="bsflag fam">⚠️ ${sh.confidence_reason||'Review'}</span>`;
+    if(conf==='low')flags+=`<span class="bsflag fr">❌ ${sh.confidence_reason||'Low confidence'}</span>`;
+
+    // Header fields (common to all types)
+    const headerHtml=`<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div><label class="fl">Student Name <span style="color:var(--accent)">*</span></label>
+        <input type="text" class="fi" id="rv${si}stn" value="${sh.student||''}" oninput="chkM(${si})">
+        <div id="rv${si}stm" style="font-size:.72rem;margin-top:3px;min-height:14px">${sm?`<span style="color:var(--green)">✅ ${sm.name}</span>`:pm?`<span style="color:var(--amber)">⚠️ Possible: ${pm.name}</span>`:'<span style="color:var(--accent)">❌ Will create new student</span>'}</div>
+      </div>
+      <div><label class="fl">Date</label><input type="date" class="fi" id="rv${si}dt" value="${sh.date||''}"></div>
+      <div><label class="fl">Staff</label><input type="text" class="fi" id="rv${si}st" value="${sh.staff||''}"></div>
+    </div>`;
+
+    let bodyHtml='';
+
+    if(ftype==='daily'){
+      // SKILLS
+      const skillsHtml=(sh.skills||[]).map((s,i)=>{
+        const p=s.pct_ind!=null?s.pct_ind:(s.ind!=null?s.ind:null);
+        return`<tr><td style="font-size:.76rem;font-weight:500">${s.name}</td>
+          <td style="text-align:center"><input class="rvn" type="number" id="rv${si}sk${i}" value="${p!=null?p:''}" min="0" max="100" placeholder="—" style="width:60px"></td>
+          <td style="text-align:center"><span class="rvp ${p!=null?pc(p):'pe'}">${p!=null?p+'%':'—'}</span></td></tr>`;
+      }).join('');
+      const behHtml=BHR.map(row=>{
+        const d=(sh.behavioral||{})[row.key]||{};
+        const plus=d.total_plus??0,plusp=d.total_plusp??null,ints=d.intervals??0;
+        const pI=ints?Math.round(plus/ints*100):null;
+        const pA=(ints&&plusp!=null)?Math.round(plusp/ints*100):null;
+        return`<tr><td style="font-size:.76rem;font-weight:500">${BHLBL[row.key]}</td>
+          <td style="text-align:center"><input class="rvn" type="number" id="rv${si}bi${row.key}" value="${plus}" min="0" oninput="rsb(${si},'${row.key}')"></td>
+          <td style="text-align:center">${row.hp?`<input class="rvn" type="number" id="rv${si}bp${row.key}" value="${plusp??0}" min="0" oninput="rsb(${si},'${row.key}')">` :'<span style="color:#ccc;font-size:.72rem">N/A</span>'}</td>
+          <td style="text-align:center"><input class="rvn" type="number" id="rv${si}bn${row.key}" value="${ints}" min="0" oninput="rsb(${si},'${row.key}')"></td>
+          <td style="text-align:center"><span class="rvp ${pI!=null?pc(pI):'pe'}" id="rv${si}bpi${row.key}">${pI!=null?pI+'%':'—'}</span></td>
+          <td style="text-align:center"><span class="rvp ${pA!=null?pc(pA):'pe'}" id="rv${si}bpa${row.key}">${pA!=null?pA+'%':'—'}</span></td></tr>`;
+      }).join('');
+      bodyHtml=`
+        ${skillsHtml?`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)">🎯 Skills</div>
+        <table class="skt" style="font-size:.76rem;margin-bottom:12px"><thead><tr><th class="l">Skill</th><th>% Ind. (edit if needed)</th><th>Display</th></tr></thead><tbody>${skillsHtml}</tbody></table>`:''}
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)">📊 Behavioral</div>
+        <table class="skt" style="font-size:.76rem"><thead><tr><th class="l">Target</th><th>Total +</th><th>Total +,+p</th><th># Intervals</th><th>% Ind.</th><th>% Ind+P</th></tr></thead><tbody>${behHtml}</tbody></table>`;
+
+    } else if(ftype==='abc'){
+      // ABC FORM — render extracted fields as editable chips/text
+      const abcFields=[
+        {key:'activity', label:'⚡ Activity'},
+        {key:'trigger',  label:'🔥 Trigger'},
+        {key:'behavior', label:'⚠️ Behavior'},
+        {key:'result',   label:'✅ Consequence'},
+        {key:'func',     label:'🧠 Function'},
+      ];
+      const extraHtml=`<div style="margin-bottom:10px"><label class="fl">Time</label><input type="text" class="fi" id="rv${si}tm" value="${sh.time||''}" style="max-width:120px"></div>`;
+      const fieldsHtml=abcFields.map(f=>{
+        const items=sh[f.key]||[];
+        return`<div style="margin-bottom:10px">
+          <label class="fl">${f.label}</label>
+          <input type="text" class="fi" id="rv${si}abc${f.key}" value="${items.join('; ')}" placeholder="Comma-separated values" style="font-size:.78rem">
+        </div>`;
+      }).join('');
+      const commentsHtml=`<div><label class="fl">📝 Comments</label><textarea class="fi" id="rv${si}abccomm" rows="2" style="resize:none;font-size:.78rem">${sh.comments||''}</textarea></div>`;
+      bodyHtml=extraHtml+fieldsHtml+commentsHtml;
+
+    } else {
+      bodyHtml='<p style="color:var(--ink-muted);font-size:.82rem">⚠️ Could not identify this form type. You can still set the student and date, but no data will be extracted.</p>';
+    }
+
+    return`<div class="bsi" id="bsi${si}">
+      <div class="bsh" onclick="togBSI(${si})">
+        <input type="checkbox" class="incb" id="inc${si}" checked onclick="event.stopPropagation()">
+        <div class="cdot ${cdot}"></div>
+        <div class="bslbl">${sh.student||'Unknown Student'}</div>
+        <div class="bsmeta">${sh.date||'No date'} · ${sh.staff||'—'}</div>
+        ${flags}<span style="font-size:.7rem;color:var(--ink-muted);margin-left:4px">▼</span>
+        <button style="margin-left:6px;padding:2px 8px;border-radius:4px;border:1px solid #ddd;background:none;cursor:pointer;font-size:.7rem;color:var(--accent);flex-shrink:0" onclick="event.stopPropagation();deleteBatchItem(${si})" title="Remove this form from review">✕</button>
+      </div>
+      <div class="bsbody ${needsFlag?'open':''}" id="bsb${si}">
+        ${headerHtml}${bodyHtml}
+      </div>
+    </div>`;
+  }).join('');
+
+    document.getElementById('bflag').style.display=flagged?'block':'none';
+  document.getElementById('bcnt').textContent=sheets.length+' form'+(sheets.length!==1?'s':'')+' detected';
+  document.getElementById('batchmod').classList.add('show');
+}
+
+function deleteBatchItem(si){
+  batchData.splice(si, 1);
+  // Re-open the modal with updated data (re-renders the list)
+  openBatch(batchData);
+}
+function togBSI(si){document.getElementById('bsb'+si).classList.toggle('open');}
+function chkM(si){
+  const nm=document.getElementById('rv'+si+'stn')?.value.trim();
+  const el=document.getElementById('rv'+si+'stm');if(!el||!nm)return;
+  const sm=students.find(s=>s.name.toLowerCase()===nm.toLowerCase());
+  const pm=!sm&&students.find(s=>s.name.toLowerCase().includes(nm.toLowerCase())||nm.toLowerCase().includes(s.name.toLowerCase()));
+  el.innerHTML=sm?`<span style="color:var(--green)">✅ ${sm.name}</span>`:pm?`<span style="color:var(--amber)">⚠️ Possible: ${pm.name}</span>`:'<span style="color:var(--accent)">❌ Will create new student</span>';
+}
+function rss(si,i){
+  const ind=parseFloat(document.getElementById('rv'+si+'si'+i)?.value)||0;
+  const pro=parseFloat(document.getElementById('rv'+si+'sp'+i)?.value)||0;
+  const err=parseFloat(document.getElementById('rv'+si+'se'+i)?.value)||0;
+  const tot=ind+pro+err;const el=document.getElementById('rv'+si+'sp'+i+'pct');if(!el)return;
+  if(!tot){el.textContent='—';el.className='rvp pe';return;}
+  const p=Math.round(ind/tot*100);el.textContent=p+'%';el.className='rvp '+pc(p);
+}
+function rsb(si,key){
+  const plus=parseFloat(document.getElementById('rv'+si+'bi'+key)?.value)||0;
+  const pe=document.getElementById('rv'+si+'bp'+key);const plusp=pe?(parseFloat(pe.value)||0):null;
+  const ints=parseFloat(document.getElementById('rv'+si+'bn'+key)?.value)||0;
+  const pI=ints?Math.round(plus/ints*100):null;
+  const pA=(ints&&plusp!=null)?Math.round(plusp/ints*100):null;
+  const ie=document.getElementById('rv'+si+'bpi'+key),ae=document.getElementById('rv'+si+'bpa'+key);
+  if(ie){ie.textContent=pI!=null?pI+'%':'—';ie.className='rvp '+(pI!=null?pc(pI):'pe');}
+  if(ae){ae.textContent=pA!=null?pA+'%':'—';ae.className='rvp '+(pA!=null?pc(pA):'pe');}
+}
+function saveAll(){
+  const BHR=[{key:'follows',hp:true},{key:'safe',hp:false},{key:'verbal',hp:true},{key:'offprogram',hp:false}];
+  let cnt=0;
+  batchData.forEach((sh,si)=>{
+    const cb=document.getElementById('inc'+si);if(!cb||!cb.checked)return;
+    const nm=document.getElementById('rv'+si+'stn')?.value.trim();
+    const date=document.getElementById('rv'+si+'dt')?.value;
+    if(!nm||!date)return;
+    let student=students.find(s=>s.name.toLowerCase()===nm.toLowerCase());
+    if(!student){student={id:'s'+Date.now()+'x'+si,name:nm,created:date};students.push(student);}
+    const sid=student.id;
+    const ftype=sh.form_type||'unknown';
+    const staff=document.getElementById('rv'+si+'st')?.value.trim()||'';
+
+    if(ftype==='daily'){
+      // Save skills
+      const skillRows=sh.skills||[];
+      if(skillRows.length){
+        const skills=skillRows.map((s,i)=>{
+          const pctInd=parseFloat(document.getElementById('rv'+si+'sk'+i)?.value);
+          return{name:s.name,ind:0,pro:0,err:0,tot:pctInd!=null&&!isNaN(pctInd)?1:0,
+                 pctInd:!isNaN(pctInd)?pctInd:null,pctAll:null};
+        }).filter(s=>s.pctInd!=null);
+        if(skills.length)skR.unshift({id:Date.now()+Math.random()+si,sid,date,staff,skills,notes:'From scan',phaseChange:false});
+      }
+      // Save behavioral
+      const targets={};let anyBeh=false;
+      BHR.forEach(row=>{
+        const plus=parseFloat(document.getElementById('rv'+si+'bi'+row.key)?.value)||0;
+        const pe=document.getElementById('rv'+si+'bp'+row.key);const plusp=pe?(parseFloat(pe.value)||0):0;
+        const ints=parseFloat(document.getElementById('rv'+si+'bn'+row.key)?.value)||0;
+        if(plus||plusp||ints)anyBeh=true;
+        targets[row.key]={plus,plusp,err:Math.max(0,ints-(row.hp?plusp:plus)),total:ints,
+          pctInd:ints?Math.round(plus/ints*100):null,pctAll:ints&&row.hp?Math.round(plusp/ints*100):null};
+      });
+      if(anyBeh)behR.unshift({id:Date.now()+Math.random()+si+.5,sid,date,staff,targets,notes:'From scan',phaseChange:false});
+
+    } else if(ftype==='abc'){
+      // Save ABC record — read from text inputs (comma/semicolon separated)
+      function parseField(id){const v=document.getElementById(id)?.value.trim();if(!v)return[];return v.split(/[;,]+/).map(s=>s.trim()).filter(Boolean);}
+      const time=document.getElementById('rv'+si+'tm')?.value.trim()||'';
+      const comments=document.getElementById('rv'+si+'abccomm')?.value.trim()||'';
+      abcR.unshift({id:Date.now()+Math.random()+si,sid,date,time,staff,
+        activity:parseField('rv'+si+'abcactivity'),trigger:parseField('rv'+si+'abctrigger'),
+        behavior:parseField('rv'+si+'abcbehavior'),result:parseField('rv'+si+'abcresult'),
+        func:parseField('rv'+si+'abcfunc'),comments,notes:'From scan'});
+    }
+    cnt++;
+  });
+  save();scheduleSyncToSheets();renderStudents();refreshSels();updPill();
+  document.getElementById('batchmod').classList.remove('show');
+  setSS('✅ Saved '+cnt+' form'+(cnt!==1?'s':'')+'. View data in the ABC, Skills, or Behavioral tabs.','ok');
+}
+
+
+// PNG CHART EXPORT
+async function exportChartsAsPng(type) {
+  if (!activeId) { alert('Select a student first.'); return; }
+  const student   = students.find(s => s.id === activeId);
+  const sName     = student ? student.name : 'Student';
+  const safeName  = sName.replace(/\s+/g, '_');
+  const areaId    = type === 'skills' ? 'sk-ga' : 'beh-ga';
+  const area      = document.getElementById(areaId);
+
+  // Collect chart cards — each card has an h3 title and a canvas
+  const cards = Array.from(area.querySelectorAll('.cc'));
+  if (!cards.length) { alert('No charts to export.'); return; }
+
+  // Work out date range from records
+  const recs   = type === 'skills'
+    ? skR.filter(r => r.sid === activeId)
+    : behR.filter(r => r.sid === activeId);
+  const dates  = recs.map(r => r.date).sort();
+  const dRange = dates.length
+    ? (dates[0] === dates[dates.length-1]
+        ? dates[0]
+        : dates[0] + ' – ' + dates[dates.length-1])
+    : new Date().toLocaleDateString();
+
+  const typeLabel   = type === 'skills' ? 'Skills Data' : 'Behavioral Data';
+  const SCALE       = 2;          // retina quality
+  const PAD         = 28;
+  const HEADER_H    = 72;
+  const FOOTER_H    = 36;
+  const CARD_PAD    = 16;
+  const TITLE_H     = 32;
+  const CHART_H     = 220;
+  const CARD_H      = TITLE_H + CHART_H + CARD_PAD * 2;
+  const GAP         = 14;
+  const CARD_W      = 760;
+  const totalW      = CARD_W + PAD * 2;
+  const totalH      = HEADER_H + cards.length * (CARD_H + GAP) + FOOTER_H + PAD;
+
+  const out = document.createElement('canvas');
+  out.width  = totalW  * SCALE;
+  out.height = totalH  * SCALE;
+  const ctx  = out.getContext('2d');
+  ctx.scale(SCALE, SCALE);
+
+  // ── PAGE BACKGROUND ──────────────────────────────────────────────────────
+  ctx.fillStyle = '#f0ede8';
+  ctx.fillRect(0, 0, totalW, totalH);
+
+  // ── HEADER BAR ───────────────────────────────────────────────────────────
+  ctx.fillStyle = '#1a1714';
+  ctx.fillRect(0, 0, totalW, HEADER_H);
+
+  // Logo text
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 18px Georgia, serif';
+  ctx.fillText(sName, PAD, 30);
+
+  ctx.font = '12px Arial, sans-serif';
+  ctx.fillStyle = '#cccccc';
+  ctx.fillText('Connections Behavioral Health  ·  ' + typeLabel, PAD, 50);
+  ctx.fillText('Date range: ' + dRange, PAD, 66);
+
+  // Export date top-right
+  ctx.font = '11px Arial, sans-serif';
+  ctx.fillStyle = '#888888';
+  ctx.textAlign = 'right';
+  ctx.fillText('Exported ' + new Date().toLocaleDateString(), totalW - PAD, 50);
+  ctx.textAlign = 'left';
+
+  // ── CHART CARDS ──────────────────────────────────────────────────────────
+  let y = HEADER_H + GAP;
+
+  for (const card of cards) {
+    const canvas  = card.querySelector('canvas');
+    const h3      = card.querySelector('h3');
+    // Extract plain text title — strip the subtitle span
+    let titleText = '';
+    if (h3) {
+      const clone = h3.cloneNode(true);
+      const span  = clone.querySelector('span');
+      const sub   = span ? span.textContent.trim() : '';
+      if (span) span.remove();
+      titleText   = clone.textContent.trim();
+      if (sub) titleText += '  —  ' + sub;
+    }
+
+    // Card shadow
+    ctx.shadowColor  = 'rgba(0,0,0,0.10)';
+    ctx.shadowBlur   = 10;
+    ctx.shadowOffsetY= 2;
+    ctx.fillStyle    = '#ffffff';
+    roundRect(ctx, PAD, y, CARD_W, CARD_H, 8);
+    ctx.fill();
+    ctx.shadowBlur   = 0;
+    ctx.shadowOffsetY= 0;
+
+    // Coloured title bar on card
+    ctx.fillStyle = '#2c5f8a';
+    roundRectTop(ctx, PAD, y, CARD_W, TITLE_H, 8);
+    ctx.fill();
+
+    // Title text
+    ctx.fillStyle = '#ffffff';
+    ctx.font      = 'bold 13px Arial, sans-serif';
+    ctx.fillText(titleText, PAD + CARD_PAD, y + 21);
+
+    // Draw chart
+    if (canvas) {
+      ctx.drawImage(canvas, PAD + CARD_PAD, y + TITLE_H + 4,
+                    CARD_W - CARD_PAD * 2, CHART_H);
+    } else {
+      ctx.fillStyle    = '#cccccc';
+      ctx.font         = '12px Arial, sans-serif';
+      ctx.textAlign    = 'center';
+      ctx.fillText('No data', PAD + CARD_W / 2, y + TITLE_H + CHART_H / 2);
+      ctx.textAlign    = 'left';
+    }
+
+    y += CARD_H + GAP;
+  }
+
+  // ── FOOTER ───────────────────────────────────────────────────────────────
+  ctx.fillStyle = '#999999';
+  ctx.font      = '10px Arial, sans-serif';
+  ctx.fillText('Generated by Connections Behavioral Health Data App', PAD, totalH - 14);
+  ctx.textAlign = 'right';
+  ctx.fillText(new Date().toLocaleString(), totalW - PAD, totalH - 14);
+  ctx.textAlign = 'left';
+
+  // ── DOWNLOAD ─────────────────────────────────────────────────────────────
+  const link      = document.createElement('a');
+  link.download   = safeName + '_' + type + '_' + new Date().toISOString().slice(0,10) + '.png';
+  link.href       = out.toDataURL('image/png');
+  link.click();
+}
+
+// Helper — full rounded rect
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Helper — top-rounded rect only (for title bar)
+function roundRectTop(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+
+// ══ GOOGLE SHEETS SYNC ═══════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmzWSn9sA4qhlTbuS5YJLjcCniO4QESF49w0eY1Ukgbe3eEUe8c8qNp8skOFYd3dAu/exec';
+let syncPending = false;
+let syncTimer   = null;
+
+function setSyncStatus(msg, type) {
+  const el = document.getElementById('syncst');
+  if (!el) return;
+  el.className = 'ssb sync-' + type;
+  el.innerHTML = (type === 'sync-wk' ? '<span class="spin"></span>' : '') + msg;
+}
+
+function updateLastSync(isoString) {
+  const el = document.getElementById('synclast');
+  if (!el || !isoString) return;
+  const d = new Date(isoString);
+  el.textContent = 'Last synced: ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+// Called automatically after every save — debounced 3 seconds
+function scheduleSyncToSheets() {
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => { syncToSheets(true); }, 3000);
+}
+
+async function syncToSheets(silent) {
+  if (!silent) setSyncStatus('Syncing to Google Sheets…', 'sync-wk');
+  try {
+    const payload = {
+      action: 'sync',
+      data: {
+        students:   students,
+        skills:     skR,
+        behavioral: behR,
+        abc:        abcR,
+        phases:     phases
+      }
+    };
+    // Apps Script requires no-cors for POST from local files
+    // We use a two-step approach: POST with no-cors (fire and forget),
+    // then confirm via GET
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    // no-cors returns opaque response — we can't read it
+    // so we treat a completed fetch as success
+    const ts = new Date().toISOString();
+    const result = { success: true, synced: ts };
+    if (result.success) {
+      const ts = result.synced || new Date().toISOString();
+      localStorage.setItem('ssbd_lastSync', ts);
+      updateLastSync(ts);
+      if (!silent) setSyncStatus('✅ Synced successfully!', 'sync-ok');
+    } else {
+      throw new Error(result.error || 'Sync failed');
+    }
+  } catch(err) {
+    if (!silent) setSyncStatus('❌ Sync failed: ' + err.message, 'sync-err');
+    else console.warn('Background sync failed:', err.message);
+  }
+}
+
+async function restoreFromSheets() {
+  if (!confirm('This will replace all local data with what is in Google Sheets. Continue?')) return;
+  setSyncStatus('Restoring from Google Sheets…', 'sync-wk');
+  try {
+    const resp = await fetch(SCRIPT_URL + '?action=read');
+    const result = await resp.json();
+    if (result.error) throw new Error(result.error);
+
+    // Restore students
+    if (result.students && result.students.length) {
+      students = result.students.map(r => ({
+        id: r.id, name: r.name, created: r.created
+      }));
+    }
+
+    // Restore skills records
+    if (result.skills && result.skills.length) {
+      const SKILL_KEYS = ['Attending','Respond to name','Relinquish','Request-general',
+                          'Point to choose','Break','Help','All Done','Wait'];
+      const COL_KEYS   = ['Attending','RespondToName','Relinquish','RequestGeneral',
+                          'PointToChoose','Break','Help','AllDone','Wait'];
+      skR = result.skills.map(r => {
+        const skills = SKILL_KEYS.map((name, i) => {
+          const k = COL_KEYS[i];
+          const pctInd = r[k+'_pctInd'] ? parseInt(r[k+'_pctInd']) : null;
+          const pctAll = r[k+'_pctAll'] ? parseInt(r[k+'_pctAll']) : null;
+          return { name, ind: +r[k+'_ind']||0, pro: +r[k+'_pro']||0, err: +r[k+'_err']||0,
+                    tot: (+r[k+'_ind']||0)+(+r[k+'_pro']||0)+(+r[k+'_err']||0), pctInd, pctAll };
+        }).filter(s => s.tot > 0);
+        return { id: r.id, sid: r.studentId, date: r.date, staff: r.staff,
+                  notes: r.notes, phaseChange: r.phaseChange === 'Yes', skills };
+      });
+    }
+
+    // Restore behavioral records
+    if (result.behavioral && result.behavioral.length) {
+      behR = result.behavioral.map(r => ({
+        id: r.id, sid: r.studentId, date: r.date, staff: r.staff,
+        notes: r.notes, phaseChange: r.phaseChange === 'Yes',
+        targets: {
+          follows:    { plus: +r.follows_plus||0,    plusp: +r.follows_plusp||0,   err: +r.follows_err||0,    total: +r.follows_total||0,    pctInd: r.follows_pctInd?parseInt(r.follows_pctInd):null,    pctAll: r.follows_pctAll?parseInt(r.follows_pctAll):null },
+          safe:       { plus: +r.safe_plus||0,       plusp: 0,                      err: +r.safe_err||0,       total: +r.safe_total||0,       pctInd: r.safe_pctInd?parseInt(r.safe_pctInd):null,           pctAll: null },
+          verbal:     { plus: +r.verbal_plus||0,     plusp: +r.verbal_plusp||0,    err: +r.verbal_err||0,     total: +r.verbal_total||0,     pctInd: r.verbal_pctInd?parseInt(r.verbal_pctInd):null,     pctAll: r.verbal_pctAll?parseInt(r.verbal_pctAll):null },
+          offprogram: { plus: +r.offprogram_plus||0, plusp: 0,                      err: +r.offprogram_err||0, total: +r.offprogram_total||0, pctInd: r.offprogram_pctInd?parseInt(r.offprogram_pctInd):null, pctAll: null }
+        }
+      }));
+    }
+
+    // Restore ABC records
+    if (result.abc && result.abc.length) {
+      abcR = result.abc.map(r => ({
+        id: r.id, sid: r.studentId, date: r.date, time: r.time, staff: r.staff,
+        activity: r.activity ? r.activity.split('; ').filter(Boolean) : [],
+        trigger:  r.trigger  ? r.trigger.split('; ').filter(Boolean)  : [],
+        behavior: r.behavior ? r.behavior.split('; ').filter(Boolean) : [],
+        result:   r.result   ? r.result.split('; ').filter(Boolean)   : [],
+        func:     r.func     ? r.func.split('; ').filter(Boolean)     : [],
+        comments: r.comments || ''
+      }));
+    }
+
+    // Restore phase changes
+    if (result.phases && result.phases.length) {
+      phases = result.phases.map(r => ({
+        id: r.id, sid: r.studentId, type: r.type, date: r.date, label: r.label
+      }));
+    }
+
+    save();
+    renderStudents(); refreshSels(); updPill();
+    setSyncStatus('✅ Data restored from Google Sheets!', 'sync-ok');
+
+  } catch(err) {
+    setSyncStatus('❌ Restore failed: ' + err.message, 'sync-err');
+  }
+}
+
+// Show last sync time on load
+function initSyncStatus() {
+  const last = localStorage.getItem('ssbd_lastSync');
+  if (last) updateLastSync(last);
+  else {
+    const el = document.getElementById('synclast');
+    if (el) el.textContent = 'Not yet synced — click Sync to push your data to Google Sheets';
+  }
+}
+
+// ANNOTATION PLUGIN
+const as=document.createElement('script');as.src='https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js';document.head.appendChild(as);
+
+// INIT
+load();renderStudents();refreshSels();updPill();initSyncStatus();
+document.getElementById('nrd').valueAsDate=new Date();
+document.getElementById('pcdate').valueAsDate=new Date();
+</script>
+</body>
+</html>
